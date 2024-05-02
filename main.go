@@ -46,6 +46,20 @@ func loggedInHandler(resp http.ResponseWriter, req *http.Request) {
 }
 
 func createAccountHandler(resp http.ResponseWriter, req *http.Request) {
+	err := req.ParseForm()
+
+	if err != nil {
+		resp.WriteHeader(400)
+		resp.Write([]byte("Error loading form"))
+		return
+	}
+
+	username := req.PostFormValue("username")
+	password := req.PostFormValue("password")
+
+	fmt.Println(username)
+	fmt.Println(password)
+
 	tmpl := template.Must(template.ParseFiles("verify-login.html"))
 	tmpl.Execute(resp, nil)
 }
