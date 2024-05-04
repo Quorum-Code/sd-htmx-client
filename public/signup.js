@@ -1,4 +1,9 @@
 // deno-lint-ignore-file
+// Static file
+function onload() {
+    SignupRequest();
+}
+
 function myFunction() {
     cookie = getCookie("acookie");
 
@@ -20,12 +25,30 @@ function incCookie() {
 }
 
 function SignupRequest() {
+    const username = document.querySelector('.username')
+    const password = document.querySelector('.password')
     const submitBtn = document.querySelector('.submit-btn')
 
     submitBtn.addEventListener('click', () => {
-        alert("pressed submit");
+        fetch('/api/sign-up', {
+            method: 'post',
+            headers: new Headers({'Content-Type': 'application/json'}),
+            body: JSON.stringify({
+                username: username.value,
+                password: password.value
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Response not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('JSON data from the server:', data);
+            location.replace("/");
+        })        
     });
-    
 }
 
 function getCookie(cname) {

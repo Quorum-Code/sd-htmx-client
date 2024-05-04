@@ -5,13 +5,19 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 	"text/template"
 	"time"
+
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/joho/godotenv"
 )
 
 func main() {
-	fs := http.FileServer(http.Dir("./"))
+	godotenv.Load("../../.env")
+
+	fs := http.FileServer(http.Dir("./public"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
 	http.HandleFunc("/login", loginHandler)
@@ -22,8 +28,22 @@ func main() {
 	http.HandleFunc("/events", eventHandler)
 	http.HandleFunc("/events/redirect", redirectHandler)
 
+	http.HandleFunc("POST /api/sign-up", PostApiSignup)
+
 	// startFileServer()
 	http.ListenAndServe(":8080", nil)
+}
+
+func PostApiSignup(resp http.ResponseWriter, req *http.Request) {
+	response := map[string]string{"token": "some token"}
+
+	jsonResponse, err := json.Marshal(response)
+	if err != nil {
+		resp.WriteHeader(400)
+		return
+	}
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Write(jsonResponse)
 }
 
 func redirectHandler(resp http.ResponseWriter, req *http.Request) {
@@ -60,6 +80,26 @@ func createAccountHandler(resp http.ResponseWriter, req *http.Request) {
 	fmt.Println(username)
 	fmt.Println(password)
 
+	jwtSecret := os.Getenv("JWT_SECRET")
+	fmt.Println(jwtSecret)
+
+	sda := jwt.RegisteredClaims{Issuer: "sd-access",
+		IssuedAt:  jwt.NewNumericDate(time.Now().UTC()),
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour).UTC()),
+		Subject:   "no-subject"}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, sda)
+
+	signedToken, err := token.SignedString([]byte(jwtSecret))
+
+	if err != nil {
+		resp.WriteHeader(400)
+		return
+	}
+
+	fmt.Println(token)
+	fmt.Println(signedToken)
+
 	tmpl := template.Must(template.ParseFiles("verify-login.html"))
 	tmpl.Execute(resp, nil)
 }
@@ -91,11 +131,13 @@ func startFileServer() {
 	// http.Handle("/public/", http.StripPrefix("/static/", fileServer))
 }
 
-func authJs(resp http.ResponseWriter, req http.Request) {
-
-}
-
 func handler(resp http.ResponseWriter, req *http.Request) {
+	if req.URL.Path != "/" {
+		resp.WriteHeader(404)
+		resp.Write([]byte("Page not found..."))
+		return
+	}
+
 	tmpl := template.Must(template.ParseFiles("index.html"))
 	tmpl.Execute(resp, nil)
 }
