@@ -1,0 +1,7 @@
+.spinner {
+    height: 100px;
+    width: 100px;
+    border: 6px solid;
+    border-color: darkgrey transparent darkgrey transparent;
+    border-radius: 50%;
+}

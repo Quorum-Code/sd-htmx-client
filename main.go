@@ -20,21 +20,40 @@ func main() {
 	fs := http.FileServer(http.Dir("./public"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
+	http.HandleFunc("/", handler)
 	http.HandleFunc("/login", loginHandler)
 	http.HandleFunc("/verify-login", verifyLoginHandler)
 	http.HandleFunc("/create-account", createAccountHandler)
 	http.HandleFunc("/logged-in", loggedInHandler)
-	http.HandleFunc("/", handler)
 	http.HandleFunc("/events", eventHandler)
 	http.HandleFunc("/events/redirect", redirectHandler)
 
 	http.HandleFunc("POST /api/sign-up", PostApiSignup)
 
-	// startFileServer()
 	http.ListenAndServe(":8080", nil)
 }
 
 func PostApiSignup(resp http.ResponseWriter, req *http.Request) {
+	type body struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
+
+	b := body{}
+	decoder := json.NewDecoder(req.Body)
+	err := decoder.Decode(&b)
+	if err != nil {
+		resp.WriteHeader(401)
+		resp.Write([]byte("unable to parse json"))
+	}
+
+	username := b.Username
+	password := b.Password
+
+	fmt.Println("Username: ", username)
+	fmt.Println("Password: ", password)
+
+	time.Sleep(2 * time.Second)
 	response := map[string]string{"token": "some token"}
 
 	jsonResponse, err := json.Marshal(response)
@@ -114,23 +133,6 @@ func loginHandler(resp http.ResponseWriter, req *http.Request) {
 	tmpl.Execute(resp, nil)
 }
 
-func startFileServer() {
-	d := "./static"
-	fs := http.FileServer(http.Dir(d))
-
-	http.Handle("/static/", fs)
-
-	// _, err := os.Stat(d)
-	// if os.IsNotExist(err) {
-	// 	fmt.Printf("Directory '%s' not found.\n", d)
-	// 	return
-	// }
-
-	// fileServer := http.FileServer(http.Dir("public"))
-
-	// http.Handle("/public/", http.StripPrefix("/static/", fileServer))
-}
-
 func handler(resp http.ResponseWriter, req *http.Request) {
 	if req.URL.Path != "/" {
 		resp.WriteHeader(404)
@@ -165,12 +167,4 @@ func eventHandler(resp http.ResponseWriter, req *http.Request) {
 		time.Sleep(1 * time.Second)
 		x++
 	}
-}
-
-type siteConfig struct {
-	connectionCount int
-}
-
-func (sc siteConfig) handleNewConnection(resp http.ResponseWriter, req *http.Request) {
-
 }

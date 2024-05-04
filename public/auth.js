@@ -13,7 +13,7 @@ function myFunction() {
     }
     setCookie("acookie", cv, 10);
 
-    alert("here is the cookie: " + cv);
+    alert(decodeURIComponent(document.cookie));
 }
 
 function incCookie() {

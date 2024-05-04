@@ -30,6 +30,7 @@ function SignupRequest() {
     const submitBtn = document.querySelector('.submit-btn')
 
     submitBtn.addEventListener('click', () => {
+        submitBtn.disabled = true;
         fetch('/api/sign-up', {
             method: 'post',
             headers: new Headers({'Content-Type': 'application/json'}),
@@ -46,6 +47,7 @@ function SignupRequest() {
         })
         .then(data => {
             console.log('JSON data from the server:', data);
+            setCookie("auth_token", data["token"], 1)
             location.replace("/");
         })        
     });
