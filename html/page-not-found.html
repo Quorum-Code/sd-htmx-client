@@ -3,23 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connection Test</title>
+    <title> Stream-Dungeon </title>
+
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- HTMX source -->
     <script src="https://unpkg.com/htmx.org@1.9.2" integrity="sha384-L6OqL9pRWyyFU3+/bjdSri+iIphTN/bvYyM37tICVyOJkWZLpP2vGn6VUEXgzg6h" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/htmx.org/dist/ext/sse.js"></script>
-    <script src="http://localhost:8080/static/auth.js"></script>
 </head>
-<body onload="myFunction()">
+<body>
     <div class="container text-center">
         <div class="row m-3">
-            <h1 class="text-center">Stream Dungeon!</h1> 
-            <small>Create an account or login to get started...</small>
-        </div>
-        
-        <a href="/login">Login/Create Account</a>
-
-        <div hx-ext="sse" sse-connect="/events" sse-swap="message">
-            Contents of this box will be updated in real time with every SSE message received from the chatroom.
+            <h1> Page not found, <a href="/"> return home. </a> </h1>
         </div>
     </div>
 </body>

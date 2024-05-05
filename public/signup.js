@@ -41,13 +41,16 @@ function SignupRequest() {
         })
         .then(response => {
             if (!response.ok) {
+                if (response.status == 409) {
+                    alert('Username already taken...');
+                }
                 throw new Error('Response not ok');
             }
             return response.json();
         })
         .then(data => {
-            console.log('JSON data from the server:', data);
-            setCookie("auth_token", data["token"], 1)
+            setCookie("access-token", data["access-token"], 1)
+            setCookie("refresh-token", data["refresh-token"], 60)
             location.replace("/");
         })        
     });
