@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
-	"time"
+
+	"github.com/Quorum-Code/sd-htmx-client/internal/authentication"
 )
 
 func (wsc *WSConfig) signupHandler(resp http.ResponseWriter, req *http.Request) {
@@ -35,16 +36,21 @@ func (wsc *WSConfig) postSignupHandler(resp http.ResponseWriter, req *http.Reque
 	fmt.Println("Username: ", username)
 	fmt.Println("Password: ", password)
 
-	err = wsc.Database.TryAddUser(username, password)
+	user, err := wsc.Database.TryAddUser(username, password)
 	if err != nil {
 		resp.WriteHeader(http.StatusConflict)
 		resp.Write([]byte("failed to create user..."))
 		return
 	}
 
-	time.Sleep(2 * time.Second)
-	response := map[string]string{"access-token": "some token", "refresh-token": "some r token"}
+	tkn, rtkn, err := authentication.CreateTokens(user.ID)
+	if err != nil {
+		resp.WriteHeader(409)
+		resp.Write([]byte("failed to create auth tokens"))
+		return
+	}
 
+	response := map[string]string{"access-token": tkn, "refresh-token": rtkn}
 	jsonResponse, err := json.Marshal(response)
 	if err != nil {
 		resp.WriteHeader(400)

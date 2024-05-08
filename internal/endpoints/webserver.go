@@ -29,10 +29,6 @@ func StartWebServer() {
 	http.HandleFunc("/sign-up", wsc.signupHandler)
 	http.HandleFunc("/login", wsc.loginHandler)
 
-	// http.HandleFunc("/verify-login", verifyLoginHandler)
-	// http.HandleFunc("/create-account", createAccountHandler)
-	// http.HandleFunc("/logged-in", loggedInHandler)
-
 	http.HandleFunc("/events", wsc.eventHandler)
 	http.HandleFunc("/events/redirect", wsc.redirectHandler)
 

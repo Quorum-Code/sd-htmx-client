@@ -28,8 +28,8 @@ type Data struct {
 	Hashes        map[int]string  `json:"hashes"`
 	RefreshTokens map[string]bool `json:"refresh_tokens"`
 
-	Usernames  map[string]bool `json:"usernames"`
-	NextUserID int             `json:"next_user_id"`
+	Usernames  map[string]int `json:"usernames"`
+	NextUserID int            `json:"next_user_id"`
 }
 
 func InitDatabase() (*Database, error) {
@@ -62,13 +62,13 @@ func InitDatabase() (*Database, error) {
 	return &database, nil
 }
 
-func (database *Database) TryAddUser(username string, password string) error {
+func (database *Database) TryAddUser(username string, password string) (*User, error) {
 	database.mux.Lock()
 	defer database.mux.Unlock()
 
 	// Check if username is already registered
 	if database.isUsernameTaken(username) {
-		return errors.New("username is taken")
+		return nil, errors.New("username is taken")
 	}
 
 	// Get next UID
@@ -79,7 +79,7 @@ func (database *Database) TryAddUser(username string, password string) error {
 	hash, err := HashPassword(password)
 	if err != nil {
 		database.data.NextUserID--
-		return err
+		return nil, err
 	}
 	database.data.Hashes[uid] = string(hash)
 
@@ -90,10 +90,27 @@ func (database *Database) TryAddUser(username string, password string) error {
 
 	// Add user to database
 	database.data.Users[uid] = user
-	database.data.Usernames[username] = true
+	database.data.Usernames[username] = uid
 
 	fmt.Println("Added a new user!")
-	return nil
+	return &user, nil
+}
+
+func (database *Database) IsValidCredentials(username string, password string) bool {
+	// Check user in database
+	uid, ok := database.data.Usernames[username]
+	if !ok {
+		// No username found
+		return false
+	}
+
+	// Check hash matches password
+	err := bcrypt.CompareHashAndPassword([]byte(database.data.Hashes[uid]), []byte(password))
+	if err != nil {
+		return false
+	} else {
+		return true
+	}
 }
 
 func (database *Database) isUsernameTaken(username string) bool {
@@ -113,7 +130,7 @@ func (database *Database) createFreshData() error {
 		Users:         make(map[int]User),
 		Hashes:        make(map[int]string),
 		RefreshTokens: make(map[string]bool),
-		Usernames:     make(map[string]bool),
+		Usernames:     make(map[string]int),
 		NextUserID:    0}
 
 	dat, err := json.Marshal(d)

@@ -39,7 +39,7 @@ func RequestToToken(req *http.Request) (AuthData, error) {
 	return AuthData{Token: token, Claim: claims}, nil
 }
 
-func CreateToken(userID int) (string, string, error) {
+func CreateTokens(userID int) (string, string, error) {
 	jwtSecret := os.Getenv("JWT_SECRET")
 
 	sda := jwt.RegisteredClaims{Issuer: "stream-dungeon-access",
