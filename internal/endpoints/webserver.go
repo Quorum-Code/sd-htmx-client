@@ -32,6 +32,7 @@ func StartWebServer() {
 	http.HandleFunc("/events", wsc.eventHandler)
 	http.HandleFunc("/events/redirect", wsc.redirectHandler)
 
+	http.HandleFunc("POST /api/index", wsc.PostIndexHandler)
 	http.HandleFunc("POST /api/sign-up", wsc.postSignupHandler)
 	http.HandleFunc("POST /api/login", wsc.postLoginHandler)
 

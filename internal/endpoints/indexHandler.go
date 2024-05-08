@@ -1,8 +1,12 @@
 package endpoints
 
 import (
+	"encoding/json"
+	"fmt"
 	"html/template"
 	"net/http"
+
+	"github.com/Quorum-Code/sd-htmx-client/internal/authentication"
 )
 
 func (wsc *WSConfig) indexHandler(resp http.ResponseWriter, req *http.Request) {
@@ -14,4 +18,26 @@ func (wsc *WSConfig) indexHandler(resp http.ResponseWriter, req *http.Request) {
 
 	tmpl := template.Must(template.ParseFiles("html/index.html"))
 	tmpl.Execute(resp, nil)
+}
+
+func (wsc *WSConfig) PostIndexHandler(resp http.ResponseWriter, req *http.Request) {
+	auth, err := authentication.RequestToToken(req)
+	if err != nil {
+		return
+	}
+
+	fmt.Println(auth.Token)
+	fmt.Println(auth.Claim)
+
+	d := map[string]string{
+		"response": "got"}
+
+	jsonData, err := json.Marshal(d)
+	if err != nil {
+		fmt.Println("failed marshaling json")
+		return
+	}
+
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Write(jsonData)
 }
