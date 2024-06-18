@@ -2,7 +2,9 @@ package endpoints
 
 import (
 	"fmt"
+	"net"
 	"net/http"
+	"os"
 
 	"github.com/Quorum-Code/sd-htmx-client/internal/database"
 )
@@ -38,5 +40,31 @@ func StartWebServer() {
 
 	fmt.Println("Web server live...")
 
-	http.ListenAndServe(":8080", nil)
+	port := ":8080"
+
+	printLocalHost(port)
+
+	http.ListenAndServe(port, nil)
+}
+
+func printLocalHost(port string) {
+	name, err := os.Hostname()
+	if err != nil {
+		fmt.Printf("Oops: %v\n", err)
+		return
+	}
+
+	addrs, err := net.LookupHost(name)
+	if err != nil {
+		fmt.Printf("Oops: %v\n", err)
+		return
+	}
+
+	fmt.Println("Possible connections...")
+
+	for _, a := range addrs {
+		fmt.Printf(" - %s%s\n", a, port)
+	}
+
+	fmt.Printf(" - %s%s\n", "localhost", port)
 }
