@@ -8,8 +8,23 @@
     <script src="https://unpkg.com/htmx.org@1.9.2" integrity="sha384-L6OqL9pRWyyFU3+/bjdSri+iIphTN/bvYyM37tICVyOJkWZLpP2vGn6VUEXgzg6h" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/htmx.org/dist/ext/sse.js"></script>
     <script src="/static/index.js"></script>
+
+    <script src="/static/banner.js"></script>
+    <link href="/static/css/banner.css" rel="stylesheet">
 </head>
+
 <body onload="onload()">
+    <div class="banner" onload="onbannerload()">
+        <p> Banner </p>
+
+        <p> Login </p>
+        <p> Sign-up </p>
+    </div>
+
+    <div class="banner-spacer"> 
+        <p> Banner Spacer </p>
+    </div>
+
     <div class="container text-center">
         <div class="row m-3">
             <h1 class="text-center">Stream Dungeon!</h1> 

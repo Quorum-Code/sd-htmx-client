@@ -1,6 +1,7 @@
 package authentication
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"strconv"
@@ -37,6 +38,19 @@ func RequestToToken(req *http.Request) (AuthData, error) {
 	}
 
 	return AuthData{Token: token, Claim: claims}, nil
+}
+
+func GetUserFromHeader(req *http.Request) (AuthData, error) {
+	c, err := req.Cookie("access-token")
+	if err != nil {
+		return AuthData{}, err
+	}
+
+	t := c.Value
+
+	fmt.Println("Access-Token: ", t)
+
+	return AuthData{}, nil
 }
 
 func CreateTokens(userID int) (string, string, error) {

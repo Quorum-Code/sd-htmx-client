@@ -32,7 +32,7 @@ function SignupRequest() {
             setCookie("access-token", data["access-token"], 1)
             setCookie("refresh-token", data["refresh-token"], 60)
             location.replace("/");
-        })        
+        })
     });
 }
 

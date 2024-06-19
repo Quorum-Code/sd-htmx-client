@@ -16,6 +16,8 @@ func (wsc *WSConfig) indexHandler(resp http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	_, _ = authentication.GetUserFromHeader(req)
+
 	tmpl := template.Must(template.ParseFiles("html/index.html"))
 	tmpl.Execute(resp, nil)
 }
