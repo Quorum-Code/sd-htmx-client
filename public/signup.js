@@ -4,26 +4,6 @@ function onload() {
     SignupRequest();
 }
 
-function myFunction() {
-    cookie = getCookie("acookie");
-
-    cv = 0;
-    console.log("cookie: " + cookie);
-    if (cookie == "") {
-        cv = 1;
-    } else {
-        cv = parseInt(cookie);
-        cv++;
-    }
-    setCookie("acookie", cv, 10);
-
-    alert("here is the cookie: " + cv);
-}
-
-function incCookie() {
-
-}
-
 function SignupRequest() {
     const username = document.querySelector('.username')
     const password = document.querySelector('.password')

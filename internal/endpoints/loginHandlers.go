@@ -18,6 +18,15 @@ func (wsc *WSConfig) postLoginHandler(resp http.ResponseWriter, req *http.Reques
 		Password string `json:"password"`
 	}
 
+	type response struct {
+		Status       int    `json:"status"`
+		Message      string `json:"message"`
+		AccessToken  string `json:"access-token"`
+		RefreshToken string `json:"resfresh-token"`
+	}
+
+	r := response{}
+
 	b := body{}
 	decoder := json.NewDecoder(req.Body)
 	err := decoder.Decode(&b)
@@ -33,6 +42,22 @@ func (wsc *WSConfig) postLoginHandler(resp http.ResponseWriter, req *http.Reques
 
 	fmt.Println("Login attempt by: ", username)
 
-	wsc.Database.IsValidCredentials(username, password)
+	success := wsc.Database.IsValidCredentials(username, password)
 
+	if success {
+		fmt.Println("Login successful")
+		r.Message = "Login success"
+		r.Status = 200
+	} else {
+		fmt.Println("Login failed")
+		r.Message = "Login failed"
+		r.Status = 409
+	}
+
+	resp.WriteHeader(r.Status)
+	resp.Header().Set("Content-Type", "application/json")
+	jsonResponse, err := json.Marshal(r)
+	if err == nil {
+		resp.Write(jsonResponse)
+	}
 }

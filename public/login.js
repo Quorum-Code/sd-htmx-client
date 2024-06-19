@@ -1,30 +1,11 @@
 // deno-lint-ignore-file
 // Static file
+
 function onload() {
-    SignupRequest();
+    OnLoginRequest();
 }
 
-function myFunction() {
-    cookie = getCookie("acookie");
-
-    cv = 0;
-    console.log("cookie: " + cookie);
-    if (cookie == "") {
-        cv = 1;
-    } else {
-        cv = parseInt(cookie);
-        cv++;
-    }
-    setCookie("acookie", cv, 10);
-
-    alert("here is the cookie: " + cv);
-}
-
-function incCookie() {
-
-}
-
-function SignupRequest() {
+function OnLoginRequest() {
     const username = document.querySelector('.username')
     const password = document.querySelector('.password')
     const submitBtn = document.querySelector('.submit-btn')
@@ -40,21 +21,18 @@ function SignupRequest() {
             })
         })
         .then(response => {
-            if (!response.ok) {
-                if (response.status == 409) {
-                    alert('Username already taken...');
-                } else {
-                    alert('Wrong username or password...');
-                }
-                throw new Error('Response not ok');
-            }
             return response.json();
         })
         .then(data => {
-            setCookie("access-token", data["access-token"], 1)
-            setCookie("refresh-token", data["refresh-token"], 60)
-            location.replace("/");
-        })        
+            if (data["status"] == 200) {
+                alert(data["message"])
+                location.replace("/")
+                return;
+            }
+
+            alert(data["message"])
+            submitBtn.disabled = false;
+        })
     });
 }
 

@@ -38,13 +38,15 @@ func StartWebServer() {
 	http.HandleFunc("POST /api/sign-up", wsc.postSignupHandler)
 	http.HandleFunc("POST /api/login", wsc.postLoginHandler)
 
-	fmt.Println("Web server live...")
+	fmt.Println("Starting web server...")
 
 	port := ":8080"
 
 	printLocalHost(port)
 
 	http.ListenAndServe(port, nil)
+
+	fmt.Println("Closing web server...")
 }
 
 func printLocalHost(port string) {
